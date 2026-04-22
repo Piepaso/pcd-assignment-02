@@ -1,7 +1,6 @@
 plugins {
     scala
     java
-    application
 }
 
 group = "pcd.ass02"
@@ -23,6 +22,9 @@ dependencies {
 
     // 4. GUI: ScalaFX
     implementation("org.scalafx:scalafx_3:20.0.0-R31")
+
+    // 5. Testing: ScalaTest
+    testImplementation("org.scalatest:scalatest_3:3.2.17")
 }
 
 java {

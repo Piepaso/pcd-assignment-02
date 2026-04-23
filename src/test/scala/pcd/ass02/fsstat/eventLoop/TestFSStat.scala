@@ -2,7 +2,7 @@ package pcd.ass02.fsstat.eventLoop
 
 object TestFSStat:
   def main(args: Array[String]): Unit =
-    val D = "../../"
+    val D = "."
     val maxFS = 1000
     val NB = 10
     val startTime = System.currentTimeMillis()
@@ -16,4 +16,6 @@ object TestFSStat:
         val rangeEnd = ((index + 1) * maxFS) / NB
         println(s"Size <= $rangeEnd bytes: $count")
       )
+    ).onFailure(err =>
+      println(s"Error: ${err.getMessage}")
     )

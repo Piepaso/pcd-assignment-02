@@ -3,7 +3,6 @@ package pcd.ass02.fsstat.eventLoop
 import io.vertx.core.*
 import eventbus.{EventBus, Message}
 import file.*
-
 import scala.util.Random
 
 object FSStat:
@@ -19,10 +18,10 @@ object FSStat:
     val topic = Random().nextInt().toString
 
     eb.consumer[Long](topic, msg =>
-      counts(steps.find(t => msg.body() <= t._1).map(o => o._2).getOrElse(NB)) += 1
+      counts(steps.find(t => msg.body() < t._1).map(o => o._2).getOrElse(NB)) += 1
       total += 1
     )
-    eb.consumer[Unit](topic+"f", _ =>
+    eb.consumer[Unit](topic+"f", msg =>
       p.complete((total, counts))
       vertx.close()
     )
@@ -30,12 +29,13 @@ object FSStat:
     p.future()
 
   private class FSReader(dir: String, topic: String) extends AbstractVerticle:
-    override def start(): Unit = scanPath(dir).onSuccess(size => eb.publish(topic+"f", ()))
+    override def start(): Unit =
+      scanPath(dir).onComplete(res => eb.publish(topic+"f", ()))
 
     private def scanPath(path: String): Future[Unit] =
       fs.props(path).compose(props =>
         if props.isDirectory then
-          fs.readDir(path).compose(paths => Future.all(paths.stream().map(scanPath).toList).map(_ => ()))
+          fs.readDir(path).compose(paths => Future.join(paths.stream().map(scanPath).toList).map(_ => ()))
         else
           eb.publish(topic, props.size())
           Future.succeededFuture()

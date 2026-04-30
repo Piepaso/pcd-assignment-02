@@ -42,10 +42,11 @@ class FSStat extends AbstractVerticle:
       )
 
     private def scanPath(path: String): Future[Unit] =
-      fs.lprops(path).compose(fileProperties =>
+      fs.lprops(path).compose( fileProperties =>
         if fileProperties.isDirectory && !fileProperties.isSymbolicLink then
-          fs.readDir(path).compose(paths =>
-            Future.all(paths.stream().map(scanPath).toList).map(_ => ()))
+          fs.readDir(path).compose( paths =>
+            Future.all(paths.stream().map(scanPath).toList).map(_ => ())
+          )
         else if fileProperties.isRegularFile then
           eb.publish(topicId, fileProperties.size())
           Future.succeededFuture()

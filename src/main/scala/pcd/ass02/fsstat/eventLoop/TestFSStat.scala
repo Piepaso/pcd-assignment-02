@@ -3,7 +3,7 @@ package pcd.ass02.fsstat.eventLoop
 import io.vertx.core.Vertx
 
 @main def TestFSStat(): Unit =
-  val D = "/home/paso"
+  val D = "."
   val maxFS = 1000
   val NB = 10
   var time = 0L

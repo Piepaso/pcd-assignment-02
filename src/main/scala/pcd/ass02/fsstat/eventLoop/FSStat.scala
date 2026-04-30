@@ -6,10 +6,6 @@ import file.*
 
 import scala.util.Random
 import pcd.ass02.fsstat.Report
-import pcd.ass02.fsstat.reactive.SimpleBarChart
-
-import java.awt.BorderLayout
-import javax.swing.{JFrame, SwingUtilities, WindowConstants}
 
 class FSStat extends AbstractVerticle:
   private var eb: EventBus = _
@@ -31,23 +27,7 @@ class FSStat extends AbstractVerticle:
       val p = Promise.promise[Report]()
       val topicId = Random().nextInt().toString
 
-      //TO REMOVE
-
-      val frame = new JFrame("FS Stat Report")
-      val chart = SimpleBarChart(maxFS, NB)
-      frame.setLayout(new BorderLayout())
-      frame.add(chart, BorderLayout.CENTER)
-      frame.setSize(1200, 800)
-      frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
-      frame.setVisible(true)
-
-      //END TO REMOVE
-
-
-      eb.consumer[Long](topicId, msg =>
-        report += msg.body()
-        SwingUtilities.invokeLater(() => chart.updateData(report))  // TO REMOVE
-      )
+      eb.consumer[Long](topicId, msg => report += msg.body())
       eb.consumer[Unit](topicId + "done", msg => p.complete(report))
       vertx.deployVerticle(new FSReader(D, topicId))
       p.future()

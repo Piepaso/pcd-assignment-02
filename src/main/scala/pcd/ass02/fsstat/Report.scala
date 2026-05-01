@@ -30,7 +30,6 @@ class Report private (maxFS: Long, NB: Int, steps: Vector[Long], counts: Vector[
       case (count, index) =>
         val rangeEnd = ((index + 1) * maxFS) / NB
         sb.append(s"Size <= $rangeEnd bytes: $count\n")
-
     sb.toString()
 
 object Report:
